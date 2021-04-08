@@ -1,0 +1,85 @@
+valgrind:
+root@9922f52c2149:/home/Projects/Fuzzing/FuzzingTasks/evaluating/NEW# valgrind /home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build/sqlite3 < sqlite3-poc 
+==1687082== Memcheck, a memory error detector
+==1687082== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==1687082== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==1687082== Command: /home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build/sqlite3
+==1687082== 
+==1687082== Invalid read of size 8
+==1687082==    at 0x466417: apndOpen (shell.c:4161)
+==1687082==    by 0x799B43: sqlite3OsOpen (sqlite3.c:23470)
+==1687082==    by 0x799B43: sqlite3PagerOpen (sqlite3.c:57016)
+==1687082==    by 0x799B43: sqlite3BtreeOpen (sqlite3.c:67464)
+==1687082==    by 0x81C0E7: openDatabase (sqlite3.c:167352)
+==1687082==    by 0x4B8229: arDotCommand (shell.c:16797)
+==1687082==    by 0x4BF2B8: do_meta_command (shell.c:17607)
+==1687082==    by 0x4E5462: process_input (shell.c:20682)
+==1687082==    by 0x420EF5: main (shell.c:21524)
+==1687082==  Address 0x8 is not stack'd, malloc'd or (recently) free'd
+==1687082== 
+==1687082== 
+==1687082== Process terminating with default action of signal 11 (SIGSEGV): dumping core
+==1687082==  Access not within mapped region at address 0x8
+==1687082==    at 0x466417: apndOpen (shell.c:4161)
+==1687082==    by 0x799B43: sqlite3OsOpen (sqlite3.c:23470)
+==1687082==    by 0x799B43: sqlite3PagerOpen (sqlite3.c:57016)
+==1687082==    by 0x799B43: sqlite3BtreeOpen (sqlite3.c:67464)
+==1687082==    by 0x81C0E7: openDatabase (sqlite3.c:167352)
+==1687082==    by 0x4B8229: arDotCommand (shell.c:16797)
+==1687082==    by 0x4BF2B8: do_meta_command (shell.c:17607)
+==1687082==    by 0x4E5462: process_input (shell.c:20682)
+==1687082==    by 0x420EF5: main (shell.c:21524)
+==1687082==  If you believe this happened as a result of a stack
+==1687082==  overflow in your program's main thread (unlikely but
+==1687082==  possible), you can try to increase the size of the
+==1687082==  main thread stack using the --main-stacksize= flag.
+==1687082==  The main thread stack size used in this run was 8388608.
+==1687082== 
+==1687082== HEAP SUMMARY:
+==1687082==     in use at exit: 72,650 bytes in 235 blocks
+==1687082==   total heap usage: 317 allocs, 82 frees, 94,943 bytes allocated
+==1687082== 
+==1687082== LEAK SUMMARY:
+==1687082==    definitely lost: 0 bytes in 0 blocks
+==1687082==    indirectly lost: 0 bytes in 0 blocks
+==1687082==      possibly lost: 24 bytes in 1 blocks
+==1687082==    still reachable: 72,626 bytes in 234 blocks
+==1687082==                       of which reachable via heuristic:
+==1687082==                         length64           : 72,520 bytes in 232 blocks
+==1687082==         suppressed: 0 bytes in 0 blocks
+==1687082== Rerun with --leak-check=full to see details of leaked memory
+==1687082== 
+==1687082== For counts of detected and suppressed errors, rerun with: -v
+==1687082== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+Segmentation fault
+
+gdb:
+Starting program: /home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build/sqlite3 < sqlite3-poc 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000000000466417 in apndOpen (pApndVfs=<optimized out>, zName=<optimized out>, pFile=0xcd6090, flags=257, pOutFlags=<optimized out>) at ../shell.c:4161
+4161        pBaseFile->pMethods->xClose(pBaseFile);
+
+ASAN:
+ASAN:SIGSEGV
+=================================================================
+==3676881==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000008 (pc 0x00000040fe9a bp 0x7fffdffd1a90 sp 0x7fffdffd19c0 T0)
+    #0 0x40fe99 in apndOpen (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x40fe99)
+    #1 0x46bfde in sqlite3OsOpen (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x46bfde)
+    #2 0x4a33c7 in sqlite3PagerOpen (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x4a33c7)
+    #3 0x4c1016 in sqlite3BtreeOpen (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x4c1016)
+    #4 0x652d3e in openDatabase (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x652d3e)
+    #5 0x65352c in sqlite3_open_v2 (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x65352c)
+    #6 0x44cd00 in arDotCommand (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x44cd00)
+    #7 0x450e75 in do_meta_command (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x450e75)
+    #8 0x46116f in process_input (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x46116f)
+    #9 0x463d37 in main (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x463d37)
+    #10 0x7f75c916883f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2083f)
+    #11 0x403798 in _start (/home/Projects/Fuzzing/Benchmarks/sqlite-autoconf-3350400/build-asan/sqlite3+0x403798)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV ??:0 apndOpen
+==3676881==ABORTING
+
