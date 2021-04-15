@@ -1,0 +1,3 @@
+var str = "HttpChannelParent RecvAsyncOpen [this=0x7f0a701db540 uri=https://www.google.com.tw/gen_204?atyp=i&ct=slh&cad=&ei=foqWWfWyJ8aE8gXcwoLIBQ&m=HV&t=C&s=1&v=2&pv=0.8723043228283538&me=1:1503038079533,x:1,V,0,0,1301,668:0,N,1,foqWWfWyJ8aE8gXcwoLIBQ:0,R,1,3,13,22,120,47:0,R,1,35,166,175,600,76:0,R,1,41,166,277,600,94:0,R,1,47,166,397,600,94:0,R,1,53,166,517,600,76:0,R,1,60,166,619,600,76:2,B,1610:84,h,1,35,o:1658,h,1,41,i:718,M,2,,1,1,41:73,c,194,283:1,e,C&zx=1503038082072]";
+var rx = /c(.*|ab)*d.*/;
+str.match(rx);
